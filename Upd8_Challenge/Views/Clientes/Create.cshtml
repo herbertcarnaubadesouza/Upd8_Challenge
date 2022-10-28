@@ -1,0 +1,198 @@
+﻿@model Upd8_Challenge.Models.CLIENTE
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<style>
+
+    .global-container {
+        border: 1px solid gray;
+        border-radius: 20px;
+        padding-bottom: 3rem;
+    }
+
+    .content{
+        display: flex;
+        flex-direction: column;
+        gap: 4rem;
+        margin-top: 1rem;
+        margin-bottom: 5rem;        
+    }
+
+       .content img{
+           width: 65px;
+           object-fit: cover;
+           border-radius: 30px;
+           margin-left: 2rem;
+       }
+
+    .container{
+        display: flex;
+        align-items: center;
+    }
+
+    .form-block{
+        display: flex;
+        align-items: center;
+    }
+
+    .form-block label{
+        margin-bottom: 0px;
+    }
+
+    .form-block input, select{
+        border-radius: 10px;
+        border: 1px solid gray;
+        padding: 5px;
+    }
+
+    .radio-button-block{
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .label-sexo{
+        margin-right: 8px;
+    }
+
+    .radio-button-type{
+        font-weight: 400;
+    }
+
+    .endereco-input {
+        min-width: 250px;
+    }
+
+    .button-create {
+        padding-inline: 3rem;
+        padding-block: 7px;
+        background: #4165b9;
+        color: white;
+        min-width: 100px;
+        border: none;
+        border-radius: 10px;
+    }
+
+    .button-cta {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 1rem;
+        max-width: 900px;
+    }
+
+        .button-cta a {
+            padding-inline: 3rem;
+            padding-block: 7px;
+            background: gray;
+            color: white;
+            min-width: 100px;
+            border: none;
+            border-radius: 10px;
+        }
+
+
+</style>
+
+
+
+@*<h2>Create</h2>*@
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4 style="margin-top:5rem;font-size: 30px">Cadastro Cliente</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="global-container">
+        <div class="content">
+            <img src="https://www.upd8.com.br/content/agency2/images/logo_upd8_stick2.png" />
+            <div class="container">
+
+                <div class="form-block">
+                    @Html.LabelFor(model => model.CPF, "CPF:", htmlAttributes: new { @class = "" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.CPF, new { htmlAttributes = new { placeholder = "Exemplo: 40478569832" } })
+                        @Html.ValidationMessageFor(model => model.CPF, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    @Html.LabelFor(model => model.ClienteName, "Nome:", htmlAttributes: new { @class = "" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.ClienteName, new { htmlAttributes = new { @class = "" } })
+                        @Html.ValidationMessageFor(model => model.ClienteName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    @Html.LabelFor(model => model.Birth, "Data de nascimento", htmlAttributes: new { @class = "" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Birth, new { type = "date" })
+                        @Html.ValidationMessageFor(model => model.Birth, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    @Html.LabelFor(model => model.Sexo, "Sexo:",htmlAttributes: new { @class = "label-sexo" })
+                    <div class="radio-button-block">
+                        @Html.RadioButtonFor(model => model.Sexo, "Masculino", new { name = "SEXO", value = "Masculino", @class = "" })
+                        <label for="SEXO" class="radio-button-type">Masculino</label>
+                        @Html.RadioButtonFor(model => model.Sexo, "Masculino", new { name = "SEXO", value = "Feminino", @class = "" })
+                        <label for="SEXO" class="radio-button-type">Feminino</label>
+                        @*@Html.EditorFor(model => model.Sexo, new { htmlAttributes = new { @class = "" } })
+        @Html.ValidationMessageFor(model => model.Sexo, "", new { @class = "text-danger" })*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="form-block">
+                    @Html.LabelFor(model => model.Endereco, htmlAttributes: new { @class = "" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Endereco, new { htmlAttributes = new { @class = "endereco-input" } })
+                        @Html.ValidationMessageFor(model => model.Endereco, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    @Html.LabelFor(model => model.EstadoId, "EstadoId", htmlAttributes: new { @class = "" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("EstadoId", null, htmlAttributes: new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.EstadoId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    @Html.LabelFor(model => model.CidadeId, "CidadeId", htmlAttributes: new { @class = "" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("CidadeId", null, htmlAttributes: new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.CidadeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="button-cta">
+            <div class="button-cta">
+                <input type="submit" value="Salvar" class="button-create" />
+                @Html.ActionLink("Voltar", "Index")
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<!--<div>-->
+    @*@Html.ActionLink("Back to List", "Index")*@
+<!--</div>-->
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

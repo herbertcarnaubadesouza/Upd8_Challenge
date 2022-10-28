@@ -1,0 +1,74 @@
+﻿@model Upd8_Challenge.Models.CLIENTE
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>CLIENTE</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ClienteName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClienteName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CPF)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CPF)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Birth)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Birth)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Sexo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Sexo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Endereco)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Endereco)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CIDADE.CidadeName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CIDADE.CidadeName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ESTADO.EstadoName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ESTADO.EstadoName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ClienteId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

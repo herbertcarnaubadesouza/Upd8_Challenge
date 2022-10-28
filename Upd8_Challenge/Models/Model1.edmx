@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="upd8_testeModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CIDADE">
+          <Key>
+            <PropertyRef Name="CidadeId" />
+          </Key>
+          <Property Name="CidadeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CidadeName" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CLIENTE">
+          <Key>
+            <PropertyRef Name="ClienteId" />
+          </Key>
+          <Property Name="ClienteId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ClienteName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CPF" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Birth" Type="datetime" Nullable="false" />
+          <Property Name="Sexo" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Endereco" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="EstadoId" Type="int" Nullable="false" />
+          <Property Name="CidadeId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ESTADO">
+          <Key>
+            <PropertyRef Name="EstadoId" />
+          </Key>
+          <Property Name="EstadoId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EstadoName" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__CLIENTE__CidadeI__4222D4EF">
+          <End Role="CIDADE" Type="Self.CIDADE" Multiplicity="1" />
+          <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CIDADE">
+              <PropertyRef Name="CidadeId" />
+            </Principal>
+            <Dependent Role="CLIENTE">
+              <PropertyRef Name="CidadeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CLIENTE__EstadoI__4316F928">
+          <End Role="ESTADO" Type="Self.ESTADO" Multiplicity="1" />
+          <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ESTADO">
+              <PropertyRef Name="EstadoId" />
+            </Principal>
+            <Dependent Role="CLIENTE">
+              <PropertyRef Name="EstadoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="upd8_testeModelStoreContainer">
+          <EntitySet Name="CIDADE" EntityType="Self.CIDADE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CLIENTE" EntityType="Self.CLIENTE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ESTADO" EntityType="Self.ESTADO" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__CLIENTE__CidadeI__4222D4EF" Association="Self.FK__CLIENTE__CidadeI__4222D4EF">
+            <End Role="CIDADE" EntitySet="CIDADE" />
+            <End Role="CLIENTE" EntitySet="CLIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CLIENTE__EstadoI__4316F928" Association="Self.FK__CLIENTE__EstadoI__4316F928">
+            <End Role="ESTADO" EntitySet="ESTADO" />
+            <End Role="CLIENTE" EntitySet="CLIENTE" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="upd8_testeModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="CIDADE">
+          <Key>
+            <PropertyRef Name="CidadeId" />
+          </Key>
+          <Property Name="CidadeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CidadeName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="CLIENTE" Relationship="Self.FK__CLIENTE__CidadeI__4222D4EF" FromRole="CIDADE" ToRole="CLIENTE" />
+        </EntityType>
+        <EntityType Name="CLIENTE">
+          <Key>
+            <PropertyRef Name="ClienteId" />
+          </Key>
+          <Property Name="ClienteId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ClienteName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CPF" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Birth" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Sexo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Endereco" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="EstadoId" Type="Int32" Nullable="false" />
+          <Property Name="CidadeId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CIDADE" Relationship="Self.FK__CLIENTE__CidadeI__4222D4EF" FromRole="CLIENTE" ToRole="CIDADE" />
+          <NavigationProperty Name="ESTADO" Relationship="Self.FK__CLIENTE__EstadoI__4316F928" FromRole="CLIENTE" ToRole="ESTADO" />
+        </EntityType>
+        <EntityType Name="ESTADO">
+          <Key>
+            <PropertyRef Name="EstadoId" />
+          </Key>
+          <Property Name="EstadoId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EstadoName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="CLIENTE" Relationship="Self.FK__CLIENTE__EstadoI__4316F928" FromRole="ESTADO" ToRole="CLIENTE" />
+        </EntityType>
+        <Association Name="FK__CLIENTE__CidadeI__4222D4EF">
+          <End Role="CIDADE" Type="Self.CIDADE" Multiplicity="1" />
+          <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CIDADE">
+              <PropertyRef Name="CidadeId" />
+            </Principal>
+            <Dependent Role="CLIENTE">
+              <PropertyRef Name="CidadeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CLIENTE__EstadoI__4316F928">
+          <End Role="ESTADO" Type="Self.ESTADO" Multiplicity="1" />
+          <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ESTADO">
+              <PropertyRef Name="EstadoId" />
+            </Principal>
+            <Dependent Role="CLIENTE">
+              <PropertyRef Name="EstadoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="upd8_testeEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="CIDADE" EntityType="Self.CIDADE" />
+          <EntitySet Name="CLIENTE" EntityType="Self.CLIENTE" />
+          <EntitySet Name="ESTADO" EntityType="Self.ESTADO" />
+          <AssociationSet Name="FK__CLIENTE__CidadeI__4222D4EF" Association="Self.FK__CLIENTE__CidadeI__4222D4EF">
+            <End Role="CIDADE" EntitySet="CIDADE" />
+            <End Role="CLIENTE" EntitySet="CLIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CLIENTE__EstadoI__4316F928" Association="Self.FK__CLIENTE__EstadoI__4316F928">
+            <End Role="ESTADO" EntitySet="ESTADO" />
+            <End Role="CLIENTE" EntitySet="CLIENTE" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="upd8_testeModelStoreContainer" CdmEntityContainer="upd8_testeEntities">
+          <EntitySetMapping Name="CIDADE">
+            <EntityTypeMapping TypeName="upd8_testeModel.CIDADE">
+              <MappingFragment StoreEntitySet="CIDADE">
+                <ScalarProperty Name="CidadeId" ColumnName="CidadeId" />
+                <ScalarProperty Name="CidadeName" ColumnName="CidadeName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CLIENTE">
+            <EntityTypeMapping TypeName="upd8_testeModel.CLIENTE">
+              <MappingFragment StoreEntitySet="CLIENTE">
+                <ScalarProperty Name="ClienteId" ColumnName="ClienteId" />
+                <ScalarProperty Name="ClienteName" ColumnName="ClienteName" />
+                <ScalarProperty Name="CPF" ColumnName="CPF" />
+                <ScalarProperty Name="Birth" ColumnName="Birth" />
+                <ScalarProperty Name="Sexo" ColumnName="Sexo" />
+                <ScalarProperty Name="Endereco" ColumnName="Endereco" />
+                <ScalarProperty Name="EstadoId" ColumnName="EstadoId" />
+                <ScalarProperty Name="CidadeId" ColumnName="CidadeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ESTADO">
+            <EntityTypeMapping TypeName="upd8_testeModel.ESTADO">
+              <MappingFragment StoreEntitySet="ESTADO">
+                <ScalarProperty Name="EstadoId" ColumnName="EstadoId" />
+                <ScalarProperty Name="EstadoName" ColumnName="EstadoName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

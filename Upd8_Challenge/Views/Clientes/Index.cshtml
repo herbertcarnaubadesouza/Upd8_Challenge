@@ -1,0 +1,209 @@
+﻿@model IEnumerable<Upd8_Challenge.Models.CLIENTE>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Consulta Cliente</h2>
+
+<style>
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        margin-block: 6rem;
+        border: 1px solid gray;
+        border-radius: 20px;
+        padding: 30px;
+    }
+
+    .content img {
+        width: 65px;
+        object-fit: cover;
+        border-radius: 30px;
+    }
+
+    .table-header {
+        background: #e5e5e5;
+    }
+
+    .first-container{
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-block: 2rem;
+    }
+
+    .buttons a {
+        padding-inline: 2rem;
+        padding-block: 7px;
+        color: white;
+        max-width: 50px;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .buttons a:nth-child(1) {
+        background: #4b7b3c;
+    }
+
+    .buttons a:nth-child(2) {
+        background: #a02e26;
+    }    
+
+    .table{
+        margin-top: 4rem;
+    }
+
+    .form-block{
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .form-block input, select {
+        border-radius: 10px;
+        border: 1px solid gray;
+        padding: 5px;
+    }
+
+    .form-block p, label,input, #radio{
+        margin: 0px;
+    }
+
+    .form-block p{
+        font-weight: 600;
+    }
+
+    .form-block label{
+        font-weight: 400;
+    }
+
+    .endereco-input{
+        min-width: 250px;
+    }
+
+    .search-button{
+        display: flex;
+        justify-content: flex-end;
+        margin-right: 20%;
+    }
+
+    .btn-search {
+        padding-inline: 3rem;
+        padding-block: 7px;
+        background: #4165b9;
+        color: white;
+        min-width: 100px;
+        border: none;
+        border-radius: 4px;
+    }
+
+</style>
+
+<div class="content">
+    <img src="https://www.upd8.com.br/content/agency2/images/logo_upd8_stick2.png" />
+    @using (Html.BeginForm("Index", "Clientes", FormMethod.Get))
+    {
+        <div class="first-container">
+            <div class="form-block">
+                <p>CPF:</p>
+                @Html.TextBox("searchByCPF", null, new { Class = "form-control", placeholder = "Exemplo: 40478569832" })
+            </div>
+            <div class="form-block">
+                <p>Nome:</p>
+                @Html.TextBox("searchByName", null, new { Class = "form-control", placeholder = "" })
+            </div>
+            <div class="form-block">
+                <p>Data Nascimento:</p>
+                <input type="date" name="searchByDate" id="date" />
+            </div>
+            <div class="form-block">
+                <p>Sexo:</p>
+                <input type="radio" name="searchBySexo" id="radio" value="Masculino" >
+                <label for="radio">Masculino</label>
+                <input type="radio" name="searchBySexo" id="radio" value="Feminino">
+                <label for="radio">Feminino</label>
+            </div>
+        </div>
+
+        <div class="first-container">
+            <div class="form-block">
+                <p>Endereço:</p>
+                @Html.TextBox("searchByAddress", null, new { @class = "endereco-input", placeholder = "" })
+            </div>
+            <div class="form-block">
+                <p>Estado:</p>
+                @Html.DropDownList("Estados", null, "Selecione um estado", htmlAttributes: new { @class = "" })
+            </div>
+            <div class="form-block">
+                <p>Estado:</p>
+                @Html.DropDownList("Cidades", null, "Selecione uma cidade", htmlAttributes: new { @class = "" })
+            </div>
+        </div>
+
+        <div class="search-button">
+            <input type="submit" value="Pesquisar" class="btn-search" />
+        </div>
+    }
+</div>
+
+<table class="table">
+    <tr>
+        <th class="table-header"></th>
+        <th class="table-header">
+            @Html.DisplayNameFor(model => model.ClienteName)
+        </th>
+        <th class="table-header">
+            @Html.DisplayNameFor(model => model.CPF)
+        </th>
+        <th class="table-header">
+            @Html.DisplayNameFor(model => model.Birth)
+        </th>
+        <th class="table-header">
+            @Html.DisplayNameFor(model => model.Sexo)
+        </th>
+        <th class="table-header">
+            @Html.DisplayNameFor(model => model.Endereco)
+        </th>
+        <th class="table-header">
+            Cidade
+        </th>
+        <th class="table-header">
+            Estado
+        </th>
+
+    </tr>
+
+@foreach (var item in Model) {
+<tr>
+    <td class="buttons">
+        @Html.ActionLink("Editar", "Edit", new { id = item.ClienteId }) |
+        @Html.ActionLink("Excluir", "Delete", new { id = item.ClienteId })
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ClienteName)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.CPF)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Birth)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Sexo)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Endereco)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.CIDADE.CidadeName)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ESTADO.EstadoName)
+    </td>
+
+</tr>
+}
+
+</table>

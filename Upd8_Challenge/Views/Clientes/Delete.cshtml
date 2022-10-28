@@ -1,0 +1,80 @@
+﻿@model Upd8_Challenge.Models.CLIENTE
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>CLIENTE</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ClienteName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClienteName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CPF)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CPF)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Birth)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Birth)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Sexo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Sexo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Endereco)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Endereco)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CIDADE.CidadeName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CIDADE.CidadeName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ESTADO.EstadoName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ESTADO.EstadoName)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
