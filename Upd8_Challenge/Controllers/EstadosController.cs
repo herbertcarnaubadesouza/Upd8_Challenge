@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Upd8_Challenge.Models;
 
@@ -12,28 +11,23 @@ namespace Upd8_Challenge.Controllers
 {
     public class EstadosController : Controller
     {
-        private upd8_testeEntities db = new upd8_testeEntities();
+        private static string basePath = "https://localhost:7053/api/";
 
         // GET: Estados
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(db.ESTADO.ToList());
-        }
+            ICollection<ESTADO> estados = null;
 
-        // GET: Estados/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            using (var client = new HttpClient())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                HttpResponseMessage response = await client.GetAsync(basePath + "Estados");
+
+                if (response.IsSuccessStatusCode)
+                    estados = await response.Content.ReadAsAsync<ICollection<ESTADO>>();
             }
-            ESTADO eSTADO = db.ESTADO.Find(id);
-            if (eSTADO == null)
-            {
-                return HttpNotFound();
-            }
-            return View(eSTADO);
-        }
+
+            return View(estados.ToList());
+        }        
 
         // GET: Estados/Create
         public ActionResult Create()
@@ -42,86 +36,82 @@ namespace Upd8_Challenge.Controllers
         }
 
         // POST: Estados/Create
-        // Para se proteger de mais ataques, habilite as propriedades específicas às quais você quer se associar. Para 
-        // obter mais detalhes, veja https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EstadoId,EstadoName")] ESTADO eSTADO)
+        public async Task<ActionResult> Create([Bind(Include = "EstadoId,EstadoName")] ESTADO estado)
         {
-            if (ModelState.IsValid)
+            using (var client = new HttpClient())
             {
-                db.ESTADO.Add(eSTADO);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                HttpResponseMessage response = await client.PostAsJsonAsync(basePath + "Estados", estado);
+
+                response.EnsureSuccessStatusCode();
             }
 
-            return View(eSTADO);
+            return RedirectToAction("Index");
         }
 
         // GET: Estados/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<ActionResult> Edit(int? id)
         {
-            if (id == null)
+            ESTADO estado = new ESTADO();
+
+            using (var client = new HttpClient())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                HttpResponseMessage response = await client.GetAsync(basePath + $"Estados/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    estado = await response.Content.ReadAsAsync<ESTADO>();
             }
-            ESTADO eSTADO = db.ESTADO.Find(id);
-            if (eSTADO == null)
-            {
-                return HttpNotFound();
-            }
-            return View(eSTADO);
+
+            return View(estado);
         }
 
         // POST: Estados/Edit/5
-        // Para se proteger de mais ataques, habilite as propriedades específicas às quais você quer se associar. Para 
-        // obter mais detalhes, veja https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "EstadoId,EstadoName")] ESTADO eSTADO)
+        public async Task<ActionResult> Edit([Bind(Include = "EstadoId,EstadoName")] ESTADO estado)
         {
-            if (ModelState.IsValid)
+            using (var client = new HttpClient())
             {
-                db.Entry(eSTADO).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                HttpResponseMessage response = await client.PutAsJsonAsync(basePath + $"Estados/{estado.EstadoId}", estado);
+
+                response.EnsureSuccessStatusCode();
             }
-            return View(eSTADO);
+
+            return RedirectToAction("Index");
         }
 
         // GET: Estados/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<ActionResult> Delete(int? id)
         {
-            if (id == null)
+            ESTADO estado = new ESTADO();
+
+            using (var client = new HttpClient())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                HttpResponseMessage response = await client.GetAsync(basePath + $"Estados/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    estado = await response.Content.ReadAsAsync<ESTADO>();
             }
-            ESTADO eSTADO = db.ESTADO.Find(id);
-            if (eSTADO == null)
-            {
-                return HttpNotFound();
-            }
-            return View(eSTADO);
+
+            return View(estado);
         }
 
         // POST: Estados/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            ESTADO eSTADO = db.ESTADO.Find(id);
-            db.ESTADO.Remove(eSTADO);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            using (var client = new HttpClient())
             {
-                db.Dispose();
+                HttpResponseMessage response = await client.DeleteAsync(basePath + $"Estados/{id}");
+
+                response.EnsureSuccessStatusCode();
             }
-            base.Dispose(disposing);
-        }
+
+            return RedirectToAction("Index");
+        }       
     }
 }

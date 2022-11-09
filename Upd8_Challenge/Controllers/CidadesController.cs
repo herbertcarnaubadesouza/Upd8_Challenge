@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Upd8_Challenge.Models;
 
@@ -12,28 +9,24 @@ namespace Upd8_Challenge.Controllers
 {
     public class CidadesController : Controller
     {
-        private upd8_testeEntities db = new upd8_testeEntities();
+        private static string basePath = "https://localhost:7053/api/";
 
         // GET: Cidades
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(db.CIDADE.ToList());
-        }
+            ICollection<CIDADE> cidades = null;
 
-        // GET: Cidades/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            using (var client = new HttpClient())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                HttpResponseMessage response = await client.GetAsync(basePath + "Cidades");
+
+                if (response.IsSuccessStatusCode)
+                    cidades = await response.Content.ReadAsAsync<ICollection<CIDADE>>();
             }
-            CIDADE cIDADE = db.CIDADE.Find(id);
-            if (cIDADE == null)
-            {
-                return HttpNotFound();
-            }
-            return View(cIDADE);
+
+            return View(cidades.ToList());
         }
+        
 
         // GET: Cidades/Create
         public ActionResult Create()
@@ -42,86 +35,85 @@ namespace Upd8_Challenge.Controllers
         }
 
         // POST: Cidades/Create
-        // Para se proteger de mais ataques, habilite as propriedades específicas às quais você quer se associar. Para 
-        // obter mais detalhes, veja https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CidadeId,CidadeName")] CIDADE cIDADE)
+        public async Task<ActionResult> Create([Bind(Include = "CidadeId,CidadeName")] CIDADE cidade)
         {
-            if (ModelState.IsValid)
+
+            using (var client = new HttpClient())
             {
-                db.CIDADE.Add(cIDADE);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                HttpResponseMessage response = await client.PostAsJsonAsync(basePath + "Cidades", cidade);
+
+                response.EnsureSuccessStatusCode();
             }
 
-            return View(cIDADE);
+
+            return RedirectToAction("Index");
         }
 
         // GET: Cidades/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<ActionResult> Edit(int? id)
         {
-            if (id == null)
+            CIDADE cidade = new CIDADE();
+
+            using (var client = new HttpClient())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                HttpResponseMessage response = await client.GetAsync(basePath + $"Cidades/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    cidade = await response.Content.ReadAsAsync<CIDADE>();
             }
-            CIDADE cIDADE = db.CIDADE.Find(id);
-            if (cIDADE == null)
-            {
-                return HttpNotFound();
-            }
-            return View(cIDADE);
+
+            return View(cidade);
         }
 
         // POST: Cidades/Edit/5
-        // Para se proteger de mais ataques, habilite as propriedades específicas às quais você quer se associar. Para 
-        // obter mais detalhes, veja https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CidadeId,CidadeName")] CIDADE cIDADE)
+        public async Task<ActionResult> Edit([Bind(Include = "CidadeId,CidadeName")] CIDADE cidade)
         {
-            if (ModelState.IsValid)
+
+            using (var client = new HttpClient())
             {
-                db.Entry(cIDADE).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                HttpResponseMessage response = await client.PutAsJsonAsync(basePath + $"Clientes/{cidade.CidadeId}", cidade);
+
+                response.EnsureSuccessStatusCode();
             }
-            return View(cIDADE);
+
+            return RedirectToAction("Index");
         }
 
         // GET: Cidades/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<ActionResult> Delete(int? id)
         {
-            if (id == null)
+            CIDADE cidade = new CIDADE();
+
+            using (var client = new HttpClient())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                HttpResponseMessage response = await client.GetAsync(basePath + $"Cidades/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    cidade = await response.Content.ReadAsAsync<CIDADE>();
             }
-            CIDADE cIDADE = db.CIDADE.Find(id);
-            if (cIDADE == null)
-            {
-                return HttpNotFound();
-            }
-            return View(cIDADE);
+
+            return View(cidade);
         }
 
         // POST: Cidades/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            CIDADE cIDADE = db.CIDADE.Find(id);
-            db.CIDADE.Remove(cIDADE);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            using (var client = new HttpClient())
             {
-                db.Dispose();
+                HttpResponseMessage response = await client.DeleteAsync(basePath + $"Cidades/{id}");
+
+                response.EnsureSuccessStatusCode();
             }
-            base.Dispose(disposing);
-        }
+
+            return RedirectToAction("Index");
+        }        
     }
 }

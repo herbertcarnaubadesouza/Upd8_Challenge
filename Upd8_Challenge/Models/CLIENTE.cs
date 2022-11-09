@@ -20,6 +20,8 @@ namespace Upd8_Challenge.Models
         public string ClienteName { get; set; }
         public string CPF { get; set; }
         [Display(Name = "Data Nasc.")]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public System.DateTime Birth { get; set; }
         public string Sexo { get; set; }
         [Display(Name = "Endereço")]

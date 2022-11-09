@@ -143,7 +143,7 @@
                     <div class="radio-button-block">
                         @Html.RadioButtonFor(model => model.Sexo, "Masculino", new { name = "SEXO", value = "Masculino", @class = "" })
                         <label for="SEXO" class="radio-button-type">Masculino</label>
-                        @Html.RadioButtonFor(model => model.Sexo, "Masculino", new { name = "SEXO", value = "Feminino", @class = "" })
+                        @Html.RadioButtonFor(model => model.Sexo, "Feminino", new { name = "SEXO", value = "Feminino", @class = "" })
                         <label for="SEXO" class="radio-button-type">Feminino</label>
                         @*@Html.EditorFor(model => model.Sexo, new { htmlAttributes = new { @class = "" } })
         @Html.ValidationMessageFor(model => model.Sexo, "", new { @class = "text-danger" })*@

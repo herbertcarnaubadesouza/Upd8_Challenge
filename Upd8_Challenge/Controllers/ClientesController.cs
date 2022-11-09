@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Upd8_Challenge.Models;
 
@@ -12,180 +9,202 @@ namespace Upd8_Challenge.Controllers
 {
     public class ClientesController : Controller
     {
-        private upd8_testeEntities db = new upd8_testeEntities();
+        private static string basePath = "https://localhost:7053/api/";
 
         // GET: Clientes
-        public ActionResult Index(string searchByName, string searchByCPF, string searchByDate, string searchBySexo, string searchByAddress, string Estados, string Cidades)
+        public async Task<ActionResult> Index(string searchByName, string searchByCPF, string searchByDate, string searchBySexo, string searchByAddress, string Estados, string Cidades)
         {
-            InicializarDropDown();
+            await InicializarDropDown();
 
-            var clientes = db.CLIENTE.Include(c => c.CIDADE).Include(c => c.ESTADO).ToList();
+            ICollection<CLIENTE> clientes = null;
 
-            List<CLIENTE> filteredClientes = new List<CLIENTE>();
-
-
-            if (clientes.Count() > 0)
+            using (var client = new HttpClient())
             {
-                if (!string.IsNullOrEmpty(searchByName) || !string.IsNullOrEmpty(searchByCPF) || !string.IsNullOrEmpty(searchByDate) || !string.IsNullOrEmpty(searchBySexo) || !string.IsNullOrEmpty(searchByAddress) || !string.IsNullOrEmpty(Estados) || !string.IsNullOrEmpty(Cidades))
-                {
+                HttpResponseMessage response = await client.GetAsync(basePath + string.Format("Clientes/?searchByCPF={0}&searchByName={1}&searchByDate={2}&searchBySexo={3}&searchByAddress={4}&Estados={5}&Cidades={6}", searchByCPF, searchByName, searchByDate, searchBySexo, searchByAddress, Estados, Cidades));
 
-                    var query = "SELECT * FROM CLIENTE WHERE 1 = 1";
-
-                    if (!string.IsNullOrEmpty(searchByName))
-                    {
-                        query += $" AND ClienteName = '{searchByName}'";
-                    }
-                    if (!string.IsNullOrEmpty(searchByCPF))
-                    {
-                        query += $" AND CPF = '{searchByCPF}'";
-                    }
-                    if (!string.IsNullOrEmpty(searchByDate))
-                    {
-                        var teste1 = DateTime.Parse(searchByDate);
-                        query += $" AND Birth = '{DateTime.Parse(searchByDate)}'";
-                    }
-                    if (!string.IsNullOrEmpty(searchBySexo))
-                    {
-                        query += $" AND Sexo = '{ searchBySexo}'";
-                    }
-
-                    if (!string.IsNullOrEmpty(searchByAddress))
-                    {
-                        query += $" AND Endereco = '{searchByAddress}'";
-                    }
-
-                    if (!string.IsNullOrEmpty(Estados))
-                    {
-                        query += $" AND EstadoId = '{ Estados}'";                       
-                    }
-
-                    if (!string.IsNullOrEmpty(Cidades))
-                    {
-                        query += $" AND CidadeId = '{Cidades}'";
-                    }
-
-                    var teste = db.CLIENTE.SqlQuery(query).ToList();
-
-                    return View(teste);
-                }
-
-                return View(clientes.ToList());
+                if (response.IsSuccessStatusCode)
+                    clientes = await response.Content.ReadAsAsync<ICollection<CLIENTE>>();
             }
+
             return View(clientes.ToList());
         }
 
-        // GET: Clientes/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            CLIENTE cLIENTE = db.CLIENTE.Find(id);
-            if (cLIENTE == null)
-            {
-                return HttpNotFound();
-            }
-            return View(cLIENTE);
-        }
-
         // GET: Clientes/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            ViewBag.CidadeId = new SelectList(db.CIDADE, "CidadeId", "CidadeName");
-            ViewBag.EstadoId = new SelectList(db.ESTADO, "EstadoId", "EstadoName");
+            ICollection<CIDADE> cidades = null;
+
+            ICollection<ESTADO> estados = null;
+
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage cidadesResponse = await client.GetAsync(basePath + "Cidades");
+
+                HttpResponseMessage estadosResponse = await client.GetAsync(basePath + "Estados");
+
+                if (cidadesResponse.IsSuccessStatusCode && estadosResponse.IsSuccessStatusCode)
+                {
+                    cidades = await cidadesResponse.Content.ReadAsAsync<ICollection<CIDADE>>();
+                    estados = await estadosResponse.Content.ReadAsAsync<ICollection<ESTADO>>();
+                }
+            }
+            ViewBag.CidadeId = new SelectList(cidades, "CidadeId", "CidadeName");
+            ViewBag.EstadoId = new SelectList(estados, "EstadoId", "EstadoName");
+
             return View();
         }
 
         // POST: Clientes/Create
-        // Para se proteger de mais ataques, habilite as propriedades específicas às quais você quer se associar. Para 
-        // obter mais detalhes, veja https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ClienteId,ClienteName,CPF,Birth,Sexo,Endereco,EstadoId,CidadeId")] CLIENTE cLIENTE)
+        public async Task<ActionResult> Create([Bind(Include = "ClienteId,ClienteName,CPF,Birth,Sexo,Endereco,EstadoId,CidadeId")] CLIENTE Cliente)
         {
-            if (ModelState.IsValid)
+            ICollection<CIDADE> cidades = null;
+
+            ICollection<ESTADO> estados = null;
+
+            using (var client = new HttpClient())
             {
-                db.CLIENTE.Add(cLIENTE);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                HttpResponseMessage response = await client.PostAsJsonAsync(basePath + "Clientes", Cliente);
+
+                HttpResponseMessage cidadesResponse = await client.GetAsync(basePath + "Cidades");
+
+                HttpResponseMessage estadosResponse = await client.GetAsync(basePath + "Estados");
+
+                if (cidadesResponse.IsSuccessStatusCode && estadosResponse.IsSuccessStatusCode)
+                {
+                    cidades = await cidadesResponse.Content.ReadAsAsync<ICollection<CIDADE>>();
+                    estados = await estadosResponse.Content.ReadAsAsync<ICollection<ESTADO>>();
+                }
+                response.EnsureSuccessStatusCode();
             }
 
-            ViewBag.CidadeId = new SelectList(db.CIDADE, "CidadeId", "CidadeName", cLIENTE.CidadeId);
-            ViewBag.EstadoId = new SelectList(db.ESTADO, "EstadoId", "EstadoName", cLIENTE.EstadoId);
-            return View(cLIENTE);
-        }
+            ViewBag.CidadeId = new SelectList(cidades, "CidadeId", "CidadeName", Cliente.CidadeId);
+            ViewBag.EstadoId = new SelectList(estados, "EstadoId", "EstadoName", Cliente.EstadoId);
 
-        // GET: Clientes/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            CLIENTE cLIENTE = db.CLIENTE.Find(id);
-            if (cLIENTE == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.CidadeId = new SelectList(db.CIDADE, "CidadeId", "CidadeName", cLIENTE.CidadeId);
-            ViewBag.EstadoId = new SelectList(db.ESTADO, "EstadoId", "EstadoName", cLIENTE.EstadoId);
-            return View(cLIENTE);
-        }
-
-        // POST: Clientes/Edit/5
-        // Para se proteger de mais ataques, habilite as propriedades específicas às quais você quer se associar. Para 
-        // obter mais detalhes, veja https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ClienteId,ClienteName,CPF,Birth,Sexo,Endereco,EstadoId,CidadeId")] CLIENTE cLIENTE)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(cLIENTE).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.CidadeId = new SelectList(db.CIDADE, "CidadeId", "CidadeName", cLIENTE.CidadeId);
-            ViewBag.EstadoId = new SelectList(db.ESTADO, "EstadoId", "EstadoName", cLIENTE.EstadoId);
-            return View(cLIENTE);
-        }
-
-        // GET: Clientes/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            CLIENTE cLIENTE = db.CLIENTE.Find(id);
-            if (cLIENTE == null)
-            {
-                return HttpNotFound();
-            }
-            return View(cLIENTE);
-        }
-
-        // POST: Clientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            CLIENTE cLIENTE = db.CLIENTE.Find(id);
-            db.CLIENTE.Remove(cLIENTE);
-            db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        public void InicializarDropDown()
+        // GET: Clientes/Edit/5
+        public async Task<ActionResult> Edit(int? id)
+        {
+            ICollection<CIDADE> cidades = null;
+
+            ICollection<ESTADO> estados = null;
+
+            CLIENTE cliente = new CLIENTE();
+
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.GetAsync(basePath + $"Clientes/{id}");
+
+                HttpResponseMessage cidadesResponse = await client.GetAsync(basePath + "Cidades");
+
+                HttpResponseMessage estadosResponse = await client.GetAsync(basePath + "Estados");
+
+                if (response.IsSuccessStatusCode && cidadesResponse.IsSuccessStatusCode && estadosResponse.IsSuccessStatusCode)
+                {
+                    cidades = await cidadesResponse.Content.ReadAsAsync<ICollection<CIDADE>>();
+                    estados = await estadosResponse.Content.ReadAsAsync<ICollection<ESTADO>>();
+                    cliente = await response.Content.ReadAsAsync<CLIENTE>();
+                }
+            }
+
+            ViewBag.CidadeId = new SelectList(cidades, "CidadeId", "CidadeName", cliente.CidadeId);
+            ViewBag.EstadoId = new SelectList(estados, "EstadoId", "EstadoName", cliente.EstadoId);
+
+            return View(cliente);
+        }
+
+        // POST: Clientes/Edit/5
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit([Bind(Include = "ClienteId,ClienteName,CPF,Birth,Sexo,Endereco,EstadoId,CidadeId")] CLIENTE cliente)
+        {
+
+            ICollection<CIDADE> cidades = null;
+
+            ICollection<ESTADO> estados = null;
+
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PutAsJsonAsync(basePath + $"Clientes/{cliente.ClienteId}", cliente);
+
+                HttpResponseMessage cidadesResponse = await client.GetAsync(basePath + "Cidades");
+
+                HttpResponseMessage estadosResponse = await client.GetAsync(basePath + "Estados");
+
+                if (cidadesResponse.IsSuccessStatusCode && estadosResponse.IsSuccessStatusCode)
+                {
+                    cidades = await cidadesResponse.Content.ReadAsAsync<ICollection<CIDADE>>();
+                    estados = await estadosResponse.Content.ReadAsAsync<ICollection<ESTADO>>();
+                }
+
+                response.EnsureSuccessStatusCode();
+            }
+
+            ViewBag.CidadeId = new SelectList(cidades, "CidadeId", "CidadeName", cliente.CidadeId);
+            ViewBag.EstadoId = new SelectList(estados, "EstadoId", "EstadoName", cliente.EstadoId);
+
+            return RedirectToAction("Index");
+        }
+
+        // GET: Clientes/Delete/5
+        public async Task<ActionResult> Delete(int? id)
+        {
+            CLIENTE cliente = new CLIENTE();
+
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.GetAsync(basePath + $"Clientes/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    cliente = await response.Content.ReadAsAsync<CLIENTE>();
+            }
+
+            return View(cliente);
+        }
+
+        // POST: Clientes/Delete/5
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.DeleteAsync(basePath + $"Clientes/{id}");
+
+                response.EnsureSuccessStatusCode();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task InicializarDropDown()
         {
             List<SelectListItem> estadosDropDown = new List<SelectListItem>();
 
             List<SelectListItem> cidadesDropDown = new List<SelectListItem>();
 
-            var estados = db.ESTADO.ToList();
+            ICollection<CIDADE> cidades = null;
 
-            var cidades = db.CIDADE.ToList();
+            ICollection<ESTADO> estados = null;
+
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage cidadesResponse = await client.GetAsync(basePath + "Cidades");
+
+                HttpResponseMessage estadosResponse = await client.GetAsync(basePath + "Estados");
+
+                if (cidadesResponse.IsSuccessStatusCode && estadosResponse.IsSuccessStatusCode)
+                {
+                    cidades = await cidadesResponse.Content.ReadAsAsync<ICollection<CIDADE>>();
+                    estados = await estadosResponse.Content.ReadAsAsync<ICollection<ESTADO>>();
+                }
+            }            
 
             foreach (var estado in estados)
             {
@@ -200,15 +219,6 @@ namespace Upd8_Challenge.Controllers
             ViewBag.Cidades = cidadesDropDown;
 
             ViewBag.Estados = estadosDropDown;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        }                
     }
 }
